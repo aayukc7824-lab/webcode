@@ -1,0 +1,248 @@
+/* =========================================================
+   Auth System Frontend — JWT Token Management & API Calls
+   ========================================================= */
+
+const API_BASE = 'http://localhost:3002/api';
+const TOKEN_KEY = 'auth-token';
+const USER_KEY = 'auth-user';
+
+// DOM Elements
+const authView = document.getElementById('auth-view');
+const postsView = document.getElementById('posts-view');
+const messageEl = document.getElementById('message');
+const messagePostsEl = document.getElementById('message-posts');
+const postsContainer = document.getElementById('posts-container');
+const userNameEl = document.getElementById('user-name');
+
+// ============ Check if user is logged in ============
+function checkAuth() {
+  const token = localStorage.getItem(TOKEN_KEY);
+  const user = localStorage.getItem(USER_KEY);
+
+  if (token && user) {
+    authView.style.display = 'none';
+    postsView.classList.add('is-active');
+    userNameEl.textContent = JSON.parse(user).name;
+    loadPosts();
+  } else {
+    authView.style.display = 'block';
+    postsView.classList.remove('is-active');
+  }
+}
+
+// ============ Switch between register/login tabs ============
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('.auth-form').forEach(form => form.classList.remove('is-active'));
+
+  if (tab === 'register') {
+    document.querySelectorAll('.tab-btn')[0].classList.add('active');
+    document.getElementById('register-form').classList.add('is-active');
+  } else {
+    document.querySelectorAll('.tab-btn')[1].classList.add('active');
+    document.getElementById('login-form').classList.add('is-active');
+  }
+
+  messageEl.classList.remove('is-visible');
+}
+
+// ============ Show message ============
+function showMessage(text, type, element = messageEl) {
+  element.textContent = type === 'error' ? '⚠️ ' + text : '✓ ' + text;
+  element.className = `message is-visible ${type}`;
+  setTimeout(() => element.classList.remove('is-visible'), 4000);
+}
+
+// ============ Handle Registration ============
+async function handleRegister(e) {
+  e.preventDefault();
+
+  const name = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const password = document.getElementById('reg-password').value;
+
+  if (!name || !email || !password) {
+    showMessage('All fields are required', 'error');
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      showMessage(data.error || 'Registration failed', 'error');
+      return;
+    }
+
+    // Save token and user info
+    localStorage.setItem(TOKEN_KEY, data.token);
+    localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+
+    showMessage('Account created! Redirecting...', 'success');
+    setTimeout(checkAuth, 1500);
+  } catch (error) {
+    showMessage('Network error: ' + error.message, 'error');
+  }
+}
+
+// ============ Handle Login ============
+async function handleLogin(e) {
+  e.preventDefault();
+
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+
+  if (!email || !password) {
+    showMessage('Email and password are required', 'error');
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      showMessage(data.error || 'Login failed', 'error');
+      return;
+    }
+
+    // Save token and user info
+    localStorage.setItem(TOKEN_KEY, data.token);
+    localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+
+    showMessage('Login successful! Redirecting...', 'success');
+    setTimeout(checkAuth, 1500);
+  } catch (error) {
+    showMessage('Network error: ' + error.message, 'error');
+  }
+}
+
+// ============ Handle Logout ============
+function handleLogout() {
+  if (confirm('Are you sure you want to logout?')) {
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(USER_KEY);
+    checkAuth();
+    switchTab('login');
+  }
+}
+
+// ============ Load all posts ============
+async function loadPosts() {
+  try {
+    const response = await fetch(`${API_BASE}/posts`);
+    if (!response.ok) throw new Error('Failed to load posts');
+
+    const posts = await response.json();
+    renderPosts(posts);
+  } catch (error) {
+    postsContainer.innerHTML = `<div style="color:var(--color-error);">Failed to load posts: ${error.message}</div>`;
+  }
+}
+
+// ============ Render posts ============
+function renderPosts(posts) {
+  const currentUser = JSON.parse(localStorage.getItem(USER_KEY) || 'null');
+
+  if (posts.length === 0) {
+    postsContainer.innerHTML = '<div style="text-align:center; padding:40px; color:var(--color-ink-soft);">No posts yet. Be the first to post!</div>';
+    return;
+  }
+
+  postsContainer.innerHTML = posts
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    .map(post => `
+      <div class="post-card">
+        <h3>${escapeHTML(post.title)}</h3>
+        <div class="post-meta">By <strong>${escapeHTML(post.author)}</strong> · ${new Date(post.createdAt).toLocaleDateString()}</div>
+        <div class="post-content">${escapeHTML(post.content)}</div>
+        ${currentUser && post.userId === currentUser.id ? `<button class="btn" style="background:var(--color-error); border-color:var(--color-error);" onclick="deletePost(${post.id})">Delete</button>` : ''}
+      </div>
+    `)
+    .join('');
+}
+
+// ============ Create post ============
+async function handleCreatePost(e) {
+  e.preventDefault();
+
+  const title = document.getElementById('post-title').value.trim();
+  const content = document.getElementById('post-content').value.trim();
+  const token = localStorage.getItem(TOKEN_KEY);
+
+  if (!title || !content) {
+    showMessage('Title and content are required', 'error', messagePostsEl);
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE}/posts`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ title, content })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      showMessage(data.error || 'Failed to create post', 'error', messagePostsEl);
+      return;
+    }
+
+    showMessage('Post published!', 'success', messagePostsEl);
+    document.getElementById('post-title').value = '';
+    document.getElementById('post-content').value = '';
+    await loadPosts();
+  } catch (error) {
+    showMessage('Network error: ' + error.message, 'error', messagePostsEl);
+  }
+}
+
+// ============ Delete post ============
+async function deletePost(postId) {
+  if (!confirm('Delete this post?')) return;
+
+  const token = localStorage.getItem(TOKEN_KEY);
+
+  try {
+    const response = await fetch(`${API_BASE}/posts/${postId}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      showMessage(data.error || 'Failed to delete post', 'error', messagePostsEl);
+      return;
+    }
+
+    showMessage('Post deleted', 'success', messagePostsEl);
+    await loadPosts();
+  } catch (error) {
+    showMessage('Network error: ' + error.message, 'error', messagePostsEl);
+  }
+}
+
+// ============ Escape HTML ============
+function escapeHTML(text) {
+  const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+  return text.replace(/[&<>"']/g, m => map[m]);
+}
+
+// ============ Check auth on page load ============
+document.addEventListener('DOMContentLoaded', checkAuth);

@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "title": "Getting Started with Express.js",
+    "excerpt": "Learn how to build a simple REST API using Express, Node's most popular web framework.",
+    "content": "Express is a minimal and flexible Node.js web application framework that provides a robust set of features for building web and mobile applications. In this article, we'll explore how to set up a basic Express server and create your first route.",
+    "author": "Aayusha KC",
+    "createdAt": "2026-01-15T10:30:00.000Z",
+    "updatedAt": "2026-01-15T10:30:00.000Z"
+  },
+  {
+    "id": 2,
+    "title": "Understanding REST API Design",
+    "excerpt": "Best practices for designing RESTful APIs that are scalable, maintainable, and easy to understand.",
+    "content": "REST (Representational State Transfer) is an architectural style for designing networked applications. A well-designed REST API uses HTTP methods appropriately: GET for retrieving data, POST for creating, PUT for updating, and DELETE for removing resources. In this guide, we'll cover naming conventions, status codes, and error handling.",
+    "author": "Alex Kumar",
+    "createdAt": "2026-01-20T14:45:00.000Z",
+    "updatedAt": "2026-01-20T14:45:00.000Z"
+  }
+]

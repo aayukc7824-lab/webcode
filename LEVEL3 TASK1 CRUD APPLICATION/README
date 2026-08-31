@@ -1,0 +1,147 @@
+# Task 7 — Full-Stack Article CRUD App
+
+A simple yet complete full-stack application with a Node.js/Express backend and vanilla JavaScript frontend. Demonstrates REST API design, CRUD operations, and client-server communication.
+
+## 📁 Project Structure
+
+```
+task7-fullstack-crud/
+├── backend/
+│   ├── server.js         (Express server with API endpoints)
+│   ├── package.json      (Node dependencies)
+│   └── data.json         (Persistent article storage)
+└── frontend/
+    ├── index.html        (HTML markup)
+    ├── js/app.js         (Frontend logic & API calls)
+    └── css/styles.css    (Styling)
+```
+
+## 🚀 Getting Started
+
+### 1. Install Backend Dependencies
+
+```bash
+cd task7-fullstack-crud/backend
+npm install
+```
+
+This installs:
+- **express** — web framework
+- **cors** — enable cross-origin requests (front-end calls back-end)
+
+### 2. Start the Server
+
+```bash
+npm start
+# or
+node server.js
+```
+
+Expected output:
+```
+🚀 API server running at http://localhost:3001
+📝 Try GET http://localhost:3001/api/articles
+```
+
+### 3. Open the Front-End
+
+Open your browser to `http://localhost:3001/` — the Express server serves the front-end automatically.
+
+## 🔧 API Endpoints (REST)
+
+All endpoints are prefixed with `/api`
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/articles` | List all articles |
+| GET | `/articles/:id` | Get single article |
+| POST | `/articles` | Create new article |
+| PUT | `/articles/:id` | Update article |
+| DELETE | `/articles/:id` | Delete article |
+
+### Example API Calls
+
+**List articles:**
+```bash
+curl http://localhost:3001/api/articles
+```
+
+**Create article:**
+```bash
+curl -X POST http://localhost:3001/api/articles \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Test","author":"Aayusha KC","excerpt":"...","content":"..."}'
+```
+
+**Update article:**
+```bash
+curl -X PUT http://localhost:3001/api/articles/1 \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Updated Title"}'
+```
+
+**Delete article:**
+```bash
+curl -X DELETE http://localhost:3001/api/articles/1
+```
+
+## 💾 Data Persistence
+
+Articles are stored in `backend/data.json`. Each article has:
+- `id` — unique identifier (auto-incremented)
+- `title` — article title
+- `excerpt` — short summary
+- `content` — full article text
+- `author` — article author name
+- `createdAt` — ISO timestamp
+- `updatedAt` — ISO timestamp
+
+When you restart the server, all articles persist — they're saved to disk.
+
+## 🎯 Key Concepts Demonstrated
+
+1. **REST API Design** — proper use of HTTP methods (GET, POST, PUT, DELETE) and status codes
+2. **CORS** — cross-origin requests so front-end (port 3000 in some setups) can call back-end (port 3001)
+3. **Request/Response Validation** — the back-end checks that required fields exist before creating
+4. **File I/O** — `data.json` is read/written on each operation (in production, you'd use a real database)
+5. **Client-Server Communication** — front-end uses `fetch()` to call the API
+6. **Error Handling** — graceful fallbacks when the API is unavailable
+
+## 🌐 Connecting to a Database (Next Step)
+
+To replace the `data.json` file with a real database (PostgreSQL, MongoDB, etc.), you'd:
+
+1. Install a database driver (e.g., `npm install pg` for PostgreSQL)
+2. Replace `readArticles()` and `writeArticles()` with database queries
+3. Update the server to connect to the DB on startup
+
+This is what a production app would do.
+
+## 📝 For Your Internship Video
+
+When explaining this on camera:
+1. Show the folder structure
+2. Run `npm install` and `npm start`
+3. Open the browser and create/edit/delete an article
+4. Show the `backend/data.json` file to prove the data persists
+5. Open `server.js` and point out the endpoint handlers
+6. Open `frontend/js/app.js` and show the `fetch()` calls
+7. Mention: "This is a complete full-stack app — the back-end serves the API, the front-end calls it, and they communicate via REST."
+
+## 🔗 GitHub Submission
+
+When pushing to GitHub, include a `.gitignore`:
+
+```
+node_modules/
+.env
+.DS_Store
+```
+
+Then:
+```bash
+git init
+git add .
+git commit -m "Task 7: Full-stack CRUD app with Express API"
+git push origin main
+```

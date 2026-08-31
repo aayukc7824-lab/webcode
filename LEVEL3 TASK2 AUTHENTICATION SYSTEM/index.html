@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auth System — Registration & Login with JWT</title>
+<meta name="description" content="User authentication system with registration, login, JWT tokens, and password hashing.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&family=Work+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- ============ Login/Register View ============ -->
+<div id="auth-view">
+  <div class="container">
+    <span class="eyebrow">Beginner to Intermediate</span>
+    <h1>Auth System</h1>
+
+    <div id="message" class="message"></div>
+
+    <div class="auth-tabs">
+      <button class="tab-btn active" onclick="switchTab('register')">Register</button>
+      <button class="tab-btn" onclick="switchTab('login')">Login</button>
+    </div>
+
+    <!-- Register Form -->
+    <form class="auth-form is-active" id="register-form" onsubmit="handleRegister(event)">
+      <div class="field">
+        <label for="reg-name">Full Name</label>
+        <input type="text" id="reg-name" required>
+      </div>
+      <div class="field">
+        <label for="reg-email">Email Address</label>
+        <input type="email" id="reg-email" required>
+      </div>
+      <div class="field">
+        <label for="reg-password">Password</label>
+        <input type="password" id="reg-password" required minlength="6">
+        <small style="color:var(--color-ink-soft); font-size:0.8rem; display:block; margin-top:4px;">At least 6 characters</small>
+      </div>
+      <button type="submit" class="btn" style="width:100%;">Create Account</button>
+    </form>
+
+    <!-- Login Form -->
+    <form class="auth-form" id="login-form" onsubmit="handleLogin(event)">
+      <div class="field">
+        <label for="login-email">Email Address</label>
+        <input type="email" id="login-email" required>
+      </div>
+      <div class="field">
+        <label for="login-password">Password</label>
+        <input type="password" id="login-password" required>
+      </div>
+      <button type="submit" class="btn" style="width:100%;">Sign In</button>
+    </form>
+
+    <div class="divider" style="margin-top:28px;">Demo credentials: test@example.com / password123</div>
+  </div>
+</div>
+
+<!-- ============ Protected View (after login) ============ -->
+<div id="posts-view" class="protected-section">
+  <div class="container container-wide">
+    <div class="header">
+      <div>
+        <span class="eyebrow">Authenticated</span>
+        <h1>My Posts</h1>
+      </div>
+      <div class="user-info">
+        <span>Welcome, <strong id="user-name">User</strong></span>
+        <button class="logout-btn" onclick="handleLogout()">Logout</button>
+      </div>
+    </div>
+
+    <div id="message-posts" class="message"></div>
+
+    <div class="create-post">
+      <h2>Create a New Post</h2>
+      <form onsubmit="handleCreatePost(event)">
+        <div class="field">
+          <label for="post-title">Title</label>
+          <input type="text" id="post-title" required>
+        </div>
+        <div class="field">
+          <label for="post-content">Content</label>
+          <textarea id="post-content" required></textarea>
+        </div>
+        <button type="submit" class="btn">Publish Post</button>
+      </form>
+    </div>
+
+    <div>
+      <h2>All Posts</h2>
+      <div class="posts-grid" id="posts-container">
+        Loading posts...
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/auth.js"></script>
+
+</body>
+</html>

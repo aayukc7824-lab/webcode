@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Portfolio</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Additional styling specific to the portfolio layout */
+        .portfolio-header {
+            text-align: center;
+            padding: 4rem 1rem;
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+
+        .portfolio-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .project-card {
+            background: #fff;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+
+        .project-card h3 {
+            color: #2c3e50;
+            margin-bottom: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <header>
+        <div class="logo">Portfolio</div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="portfolio.html" class="active">Portfolio</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Introduction Section -->
+        <section class="portfolio-header">
+            <h1>Hello, I'm Aayusha</h1>
+            <p>Aspiring Web Developer & Computer Science Student building modern digital experiences.</p>
+        </section>
+
+        <!-- Projects Section -->
+        <section class="content-section">
+            <h2>Featured Projects</h2>
+            <p>Here are some of the web development projects I have worked on during my learning journey.</p>
+            
+            <div class="projects-grid">
+                <div class="project-card">
+                    <h3>Static Website</h3>
+                    <p>A multi-page responsive website built with HTML and CSS featuring a custom layout and media queries.</p>
+                </div>
+                <div class="project-card">
+                    <h3>Task Manager App</h3>
+                    <p>An interactive to-do list web application utilizing JavaScript for real-time item tracking and storage.</p>
+                </div>
+                <div class="project-card">
+                    <h3>Portfolio Webpage</h3>
+                    <p>A personal showcase site utilizing CSS grid and custom animations to highlight developer skills.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section / Quick CTA -->
+        <section class="content-section" style="text-align: center;">
+            <h2>Let's Connect</h2>
+            <p>Interested in collaborating or want to chat about code? Reach out through the contact page!</p>
+            <a href="contact.html" class="btn">Get in Touch</a>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 My Portfolio. All rights reserved.© 2026 Aayusha | Codveda Internship</p>
+    </footer>
+
+</body>
+</html>

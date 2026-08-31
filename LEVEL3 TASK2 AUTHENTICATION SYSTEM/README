@@ -1,0 +1,229 @@
+# Task 8 — User Authentication System
+
+A complete authentication system featuring user registration, login, JWT token management, and password hashing with bcryptjs. Demonstrates secure patterns like password hashing, JWT tokens, and token-protected routes.
+
+## 📁 Project Structure
+
+```
+task8-auth-system/
+├── backend/
+│   ├── server.js        (Express server with auth endpoints)
+│   ├── package.json     (Dependencies: express, cors, bcryptjs, jsonwebtoken)
+│   ├── users.json       (User storage with hashed passwords)
+│   └── posts.json       (Posts created by authenticated users)
+└── frontend/
+    ├── index.html       (Registration, login, and posts UI)
+    ├── js/auth.js       (Auth flow, token management, API calls)
+    └── css/styles.css   (Styling)
+```
+
+## 🚀 Getting Started
+
+### 1. Install Backend Dependencies
+
+```bash
+cd task8-auth-system/backend
+npm install
+```
+
+Installs:
+- **express** — web framework
+- **cors** — enable cross-origin requests
+- **bcryptjs** — password hashing library
+- **jsonwebtoken** — JWT token creation/verification
+
+### 2. Start the Server
+
+```bash
+npm start
+# Server runs on http://localhost:3002
+```
+
+### 3. Open the Front-End
+
+Open `http://localhost:3002/` in your browser.
+
+## 🔒 Key Security Features
+
+### 1. Password Hashing with bcryptjs
+
+When a user registers:
+1. Password is hashed with `bcryptjs.hash(password, 10)` (salt rounds = 10)
+2. **Original password is never stored** — only the hash
+3. On login, incoming password is compared with hash using `bcryptjs.compare(password, hashedPassword)`
+
+```javascript
+// During registration
+const hashedPassword = await bcryptjs.hash(password, 10);
+```
+
+```javascript
+// During login
+const passwordMatch = await bcryptjs.compare(password, user.password);
+```
+
+### 2. JWT Tokens
+
+- Generated after successful login/registration
+- Token contains: `{ id, email, name }` + expiration (7 days)
+- Sent as `Authorization: Bearer TOKEN` header on protected routes
+- Verified on server before allowing access to protected endpoints
+
+```javascript
+// Create token
+const token = jwt.sign({ id, email, name }, JWT_SECRET, { expiresIn: '7d' });
+
+// Verify token (middleware)
+jwt.verify(token, JWT_SECRET, (err, user) => { ... });
+```
+
+### 3. Protected Routes
+
+Routes that require authentication use the `authenticateToken` middleware:
+
+```javascript
+// Endpoint requires login
+app.post('/api/posts', authenticateToken, (req, res) => {
+  // Only authenticated users can post
+});
+```
+
+Users who don't send a valid token get a 401 response.
+
+### 4. Authorization (Ownership Check)
+
+When deleting a post, the server checks that the user owns the post:
+
+```javascript
+if (post.userId !== req.user.id) {
+  return res.status(403).json({ error: 'You can only delete your own posts' });
+}
+```
+
+This prevents users from deleting other people's posts.
+
+## 📡 API Endpoints
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---|
+| POST | `/api/auth/register` | Create new user | No |
+| POST | `/api/auth/login` | Get JWT token | No |
+| GET | `/api/auth/me` | Get current user info | Yes |
+| GET | `/api/posts` | List all posts | No |
+| POST | `/api/posts` | Create post | Yes |
+| DELETE | `/api/posts/:id` | Delete post | Yes (owner only) |
+
+### Example API Calls
+
+**Register:**
+```bash
+curl -X POST http://localhost:3002/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Aayusha KC","email":"aayushakc@example.com","password":"password123"}'
+```
+
+Response:
+```json
+{
+  "message": "User registered successfully",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": { "id": 1, "email": "aayusha@example.com", "name": "Aayusha KC" }
+}
+```
+
+**Create Post (with token):**
+```bash
+curl -X POST http://localhost:3002/api/posts \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <YOUR_TOKEN_HERE>" \
+  -d '{"title":"My First Post","content":"Hello world!"}'
+```
+
+## 💾 Data Storage
+
+### users.json
+```json
+[
+  {
+    "id": 1,
+    "email": "aayusha@example.com",
+    "name": "Aayusha KC",
+    "password": "$2a$10$...", // hashed, not plaintext
+    "createdAt": "2026-01-25T12:00:00.000Z"
+  }
+]
+```
+
+### posts.json
+```json
+[
+  {
+    "id": 1,
+    "userId": 1,        // links post to user
+    "author": "Aayusha KC",
+    "title": "My Post",
+    "content": "...",
+    "createdAt": "2026-01-25T12:30:00.000Z"
+  }
+]
+```
+
+## 🎯 Front-End Flow
+
+1. **Register/Login Screen** — user enters email and password
+2. **Token Storage** — after successful auth, JWT token is saved to `localStorage`
+3. **Protected View** — user sees posts and can create/delete their own
+4. **API Calls** — every request to `/api/posts` includes the token in the `Authorization` header
+5. **Logout** — token is deleted from storage, user returns to login
+
+## 🔑 Demo Credentials
+
+Pre-loaded user (if you want to add one to `users.json`):
+
+```json
+{
+  "id": 1,
+  "email": "test@example.com",
+  "name": "Test User",
+  "password": "$2a$10$N9qo8uLOickgxhq2c0xpv.K...", // hash of "password123"
+  "createdAt": "2026-01-25T00:00:00.000Z"
+}
+```
+
+You'd need to create this by running the registration endpoint with `email: test@example.com` and `password: password123`, then adding it to the file.
+
+## 🌐 Next Steps: Database
+
+In a production app, you'd replace:
+- `users.json` with a PostgreSQL/MongoDB `users` table
+- `posts.json` with a `posts` table
+
+The API logic would stay the same — just swap the file I/O with database queries.
+
+## 📝 For Your Internship Video
+
+When explaining this on camera:
+
+1. **Show the flow:** register new user → get token → stored in localStorage → use it to create/delete posts
+2. **Show password hashing:** open `server.js` and point out the bcryptjs lines
+3. **Show token verification:** explain that protected routes use the `authenticateToken` middleware
+4. **Mention security:** "Password is hashed with bcryptjs, never stored as plaintext. Token is time-limited (7 days). Users can only delete their own posts."
+5. **Test in browser:** register, create a post, logout, login, delete post
+6. **Check the storage:** open browser DevTools → Application → localStorage to show the token is stored
+
+## 🔗 GitHub Submission
+
+```bash
+cd task8-auth-system
+git init
+git add .
+git commit -m "Task 8: Auth system with JWT and bcryptjs"
+git push origin main
+```
+
+Include in `.gitignore`:
+```
+node_modules/
+.env
+.DS_Store
+```

@@ -1,0 +1,18 @@
+{
+  "name": "auth-system-api",
+  "version": "1.0.0",
+  "description": "User authentication system with JWT and password hashing",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.0"
+  },
+  "author": "",
+  "license": "MIT"
+}

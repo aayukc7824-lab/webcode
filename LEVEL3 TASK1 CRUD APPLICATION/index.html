@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Article Manager — Full-Stack CRUD App</title>
+<meta name="description" content="A full-stack blog article management system with Express backend and vanilla JS front-end.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&family=Work+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div>
+      <span class="eyebrow">Full-stack CRUD</span>
+      <h1>Article Manager</h1>
+    </div>
+    <button class="btn" id="create-btn">+ New Article</button>
+  </div>
+
+  <div id="message-container"></div>
+
+  <div id="articles-container" class="loading">
+    Loading articles...
+  </div>
+</div>
+
+<!-- Modal for creating/editing articles -->
+<div class="modal" id="article-modal">
+  <div class="modal-content">
+    <h2 id="modal-title">New Article</h2>
+    <form id="article-form" novalidate>
+      <div class="field">
+        <label for="title">Title</label>
+        <input type="text" id="title" name="title" required>
+      </div>
+      <div class="field">
+        <label for="author">Author</label>
+        <input type="text" id="author" name="author" required>
+      </div>
+      <div class="field">
+        <label for="excerpt">Excerpt</label>
+        <input type="text" id="excerpt" name="excerpt" required>
+      </div>
+      <div class="field">
+        <label for="content">Content</label>
+        <textarea id="content" name="content" required></textarea>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" id="close-modal-btn">Cancel</button>
+        <button type="submit" class="btn">Save Article</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+
+</body>
+</html>
